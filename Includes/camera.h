@@ -14,11 +14,11 @@ enum camera_movement
 };
 
 // Camera values
-const float32         YAW = -90.0f;
-const float32       PITCH = 0.0f;
-const float32       SPEED = 3.0f;
-const float32 SENSITIVITY = 0.1f;
-const float32        ZOOM = 45.0f;
+const f32         YAW = -90.0f;
+const f32       PITCH = 0.0f;
+const f32       SPEED = 3.0f;
+const f32 SENSITIVITY = 0.1f;
+const f32        ZOOM = 45.0f;
 
 // Structure that processes input and calculates the corresponding euler angles
 struct camera
@@ -31,13 +31,13 @@ struct camera
   struct vec3 WorldUp;
 
   // Euler angles
-  float32 Yaw;
-  float32 Pitch;
+  f32 Yaw;
+  f32 Pitch;
 
   // Camera options
-  float32 MovementSpeed;
-  float32 MouseSensitivity;
-  float32 Zoom;
+  f32 MovementSpeed;
+  f32 MouseSensitivity;
+  f32 Zoom;
 };
 
 void
@@ -71,10 +71,10 @@ GetViewMatrix(struct camera *Camera)
 
 void 
 ProcessKeyboard(struct camera *Camera, enum camera_movement Direction, 
-                float32 DeltaTime)
+                f32 DeltaTime)
 {
   
-  float32 Velocity = Camera->MovementSpeed * DeltaTime;
+  f32 Velocity = Camera->MovementSpeed * DeltaTime;
   if (Direction == FORWARD)
   {
     Camera->Position.X += Camera->Front.X * Velocity;
@@ -102,7 +102,7 @@ ProcessKeyboard(struct camera *Camera, enum camera_movement Direction,
 }
 
 void
-ProcessMouseMovement(struct camera *Camera, float32 XOffset, float32 YOffset, bool ConstrainPitch)
+ProcessMouseMovement(struct camera *Camera, f32 XOffset, f32 YOffset, bool ConstrainPitch)
 {
   ConstrainPitch = true;
   XOffset *= Camera->MouseSensitivity;
@@ -127,7 +127,7 @@ ProcessMouseMovement(struct camera *Camera, float32 XOffset, float32 YOffset, bo
 }
 
 void
-ProcessMouseScroll(struct camera *const Camera, float32 YOffset)
+ProcessMouseScroll(struct camera *const Camera, f32 YOffset)
 {
   if (Camera->Zoom >= 1.0f && Camera->Zoom <= 45.0f)
   {

@@ -21,16 +21,16 @@ math_lib.h - v0.9.0
 
 #define PI 3.14159265359f
 
-inline float32
-ToRadians(float32 Angle)
+inline f32
+ToRadians(f32 Angle)
 {
-  return(float32) { Angle * (PI / 180.0f) };
+  return(f32) { Angle * (PI / 180.0f) };
 }
 
-inline float32
-ToDegrees(float32 Angle)
+inline f32
+ToDegrees(f32 Angle)
 {
-  return(float32) { Angle * (180.0f / PI) };
+  return(f32) { Angle * (180.0f / PI) };
 }
 
 
@@ -42,23 +42,23 @@ ToDegrees(float32 Angle)
 
 struct vec2
 {
-  float32 X;
-  float32 Y;
+  f32 X;
+  f32 Y;
 };
 
 struct vec3
 {
-  float32 X;
-  float32 Y;
-  float32 Z;
+  f32 X;
+  f32 Y;
+  f32 Z;
 };
 
 struct vec4
 {
-  float32 X;
-  float32 Y;
-  float32 Z;
-  float32 W;
+  f32 X;
+  f32 Y;
+  f32 Z;
+  f32 W;
 };
 
 // VEC 2 functions
@@ -80,16 +80,16 @@ Vec2Div(const struct vec2 V0, const struct vec2 V1)
   return (struct vec2) { V0.X / V1.X, V0.Y / V1.Y };
 }
 
-inline float32 
+inline f32 
 Vec2Length(const struct vec2 V)
 {
-  return (float32) { (float)sqrt((V.X * V.X) + (V.Y * V.Y)) };
+  return (f32) { (float)sqrt((V.X * V.X) + (V.Y * V.Y)) };
 }
 
-inline float32 
+inline f32 
 Vec2Dot(const struct vec2 V0, const struct vec2 V1)
 {
-  return (float32) { (V0.X * V1.X) + (V0.Y * V1.Y) };
+  return (f32) { (V0.X * V1.X) + (V0.Y * V1.Y) };
 }
 
 inline struct vec2 
@@ -118,16 +118,16 @@ Vec3Div(const struct vec3 V0, const struct vec3 V1)
   return (struct vec3) { V0.X / V1.X, V0.Y / V1.Y, V0.Z / V1.Z };
 }
 
-inline float32 
+inline f32 
 Vec3Length(const struct vec3 V)
 {
-  return (float32) { (float)sqrt((V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z)) };
+  return (f32) { (float)sqrt((V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z)) };
 }
 
-inline float32 
+inline f32 
 Vec3Dot(const struct vec3 V0, const struct vec3 V1)
 {
-  return (float32) { (V0.X * V1.X) + (V0.Y * V1.Y) + (V0.Z * V1.Z) };
+  return (f32) { (V0.X * V1.X) + (V0.Y * V1.Y) + (V0.Z * V1.Z) };
 }
 
 inline struct vec3 
@@ -168,17 +168,17 @@ Vec4Div(const struct vec4 V0, const struct vec4 V1)
                          V0.W / V1.W };
 }
 
-inline float32 
+inline f32 
 Vec4Length(const struct vec4 V)
 {
-  return (float32) { (float)sqrt((V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z) +
+  return (f32) { (float)sqrt((V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z) +
                                (V.W * V.W)) };
 }
 
-inline float32 
+inline f32 
 Vec4Dot(const struct vec4 V0, const struct vec4 V1)
 {
-  return (float32) { (V0.X * V1.X) + (V0.Y * V1.Y) + (V0.Z * V1.Z) +
+  return (f32) { (V0.X * V1.X) + (V0.Y * V1.Y) + (V0.Z * V1.Z) +
                    (V0.W * V1.W) };
 }
 
@@ -199,12 +199,12 @@ NormalizeVec4(const struct vec4 V)
 
 struct mat2
 {
-  float32 Element[2][2];
+  f32 Element[2][2];
 };
 
 struct mat4
 {
-  float32 Element[4][4];
+  f32 Element[4][4];
 };
 
 // MATRIX 2
@@ -218,7 +218,7 @@ Matrix2Add(const struct mat2 M0, const struct mat2 M1)
 }
 
 inline struct mat2 
-Matrix2ScalarAdd(const float32 Value, const struct mat2 M1)
+Matrix2ScalarAdd(const f32 Value, const struct mat2 M1)
 {
   return (struct mat2) { Value + M1.Element[0][0],
                          Value + M1.Element[0][1],
@@ -236,7 +236,7 @@ Matrix2Sub(const struct mat2 M0, const struct mat2 M1)
 }
 
 inline struct mat2 
-Matrix2ScalarSub(const float32 Value, const struct mat2 M1)
+Matrix2ScalarSub(const f32 Value, const struct mat2 M1)
 {
   return (struct mat2) { M1.Element[0][0] - Value,
                          M1.Element[0][1] - Value,
@@ -261,7 +261,7 @@ Matrix2Mul(const struct mat2 M0, const struct mat2 M1)
 }
 
 inline struct mat2 
-Matrix2ScalarProduct(const float32 Value, const struct mat2 M1)
+Matrix2ScalarProduct(const f32 Value, const struct mat2 M1)
 {
   return (struct mat2) { Value * M1.Element[0][0],
                          Value * M1.Element[0][1],
@@ -271,7 +271,7 @@ Matrix2ScalarProduct(const float32 Value, const struct mat2 M1)
 
 // MATRIX 4
 inline struct mat4
-InitializeMat4(const float32 Value)
+InitializeMat4(const f32 Value)
 {
   struct mat4 M;
   M.Element[0][0] = Value;
@@ -304,13 +304,13 @@ Mat4Translate(const struct vec3 *V)
 }
 
 inline struct mat4
-Mat4Rotate(const float32 Angle, struct vec3 *V)
+Mat4Rotate(const f32 Angle, struct vec3 *V)
 {
   struct mat4 M = InitializeMat4(1.0f);
-  float32 Radian = ToRadians(Angle);
-  float32 C = cosf(Radian);
-  float32 S = sinf(Radian);
-  float32 T = 1 - C;
+  f32 Radian = ToRadians(Angle);
+  f32 C = cosf(Radian);
+  f32 S = sinf(Radian);
+  f32 T = 1 - C;
   *V = NormalizeVec3(*V);
   M.Element[0][0] = (V->X * V->X * T) + C;
   M.Element[0][1] = (V->X * V->Y * T) - V->Z * S;
@@ -327,10 +327,10 @@ Mat4Rotate(const float32 Angle, struct vec3 *V)
 }
 
 inline struct mat4 
-Mat4RotX(const float32 Angle)
+Mat4RotX(const f32 Angle)
 {
   struct mat4 M = InitializeMat4(1.0f);
-  float32 Radian = ToRadians(Angle);
+  f32 Radian = ToRadians(Angle);
   M.Element[1][1] = cosf(Radian);
   M.Element[1][2] = -sinf(Radian);
   M.Element[2][1] = sinf(Radian);
@@ -339,10 +339,10 @@ Mat4RotX(const float32 Angle)
 }
 
 inline struct mat4
-Mat4RotY(const float32 Angle)
+Mat4RotY(const f32 Angle)
 {
   struct mat4 M = InitializeMat4(1.0f);
-  float32 Radian = ToRadians(Angle);
+  f32 Radian = ToRadians(Angle);
   M.Element[0][0] = cosf(Radian);
   M.Element[0][2] = sinf(Radian);
   M.Element[2][0] = -sinf(Radian);
@@ -351,10 +351,10 @@ Mat4RotY(const float32 Angle)
 }
 
 inline struct mat4
-Mat4RotZ(const float32 Angle)
+Mat4RotZ(const f32 Angle)
 {
   struct mat4 M = InitializeMat4(1.0f);
-  float32 Radian = ToRadians(Angle);
+  f32 Radian = ToRadians(Angle);
   M.Element[0][0] = cosf(Radian);
   M.Element[0][1] = -sinf(Radian);
   M.Element[1][0] = sinf(Radian);
@@ -363,7 +363,7 @@ Mat4RotZ(const float32 Angle)
 }
 
 inline struct mat4 
-Mat4Scale(const float32 X, const float32 Y, const float32 Z)
+Mat4Scale(const f32 X, const f32 Y, const f32 Z)
 {
   struct mat4 M = InitializeMat4(1.0f);
   M.Element[0][0] = X;
@@ -373,9 +373,9 @@ Mat4Scale(const float32 X, const float32 Y, const float32 Z)
 }
 
 inline struct mat4
-Mat4Orthographic(const float32 Left, const float32 Right, 
-                 const float32 Bottom, const float32 Top,
-                 const float32 Far, const float32 Near)
+Mat4Orthographic(const f32 Left, const f32 Right, 
+                 const f32 Bottom, const f32 Top,
+                 const f32 Far, const f32 Near)
 {
   struct mat4 M = InitializeMat4(1.0f);
   M.Element[0][0] = 2 / Right - Left;
@@ -388,11 +388,11 @@ Mat4Orthographic(const float32 Left, const float32 Right,
 }
 
 inline struct mat4
-Mat4Perspective(const float32 FOV , const float32 Aspect, 
-                const float32 Near, const float32 Far)
+Mat4Perspective(const f32 FOV , const f32 Aspect, 
+                const f32 Near, const f32 Far)
 {
   struct mat4 M = InitializeMat4(1.0f);
-  float32 S = 1 / tanf((FOV / 2) * (PI / 180));
+  f32 S = 1 / tanf((FOV / 2) * (PI / 180));
   M.Element[0][0] = Aspect * S;
   M.Element[1][1] = Aspect * S;
   M.Element[2][2] = -(Far / (Far - Near));

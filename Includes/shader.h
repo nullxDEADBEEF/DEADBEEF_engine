@@ -10,7 +10,7 @@
 
 struct shader
 {
-  int32 Program;
+  i32 Program;
 };
 
 // Loads, compiles and attach shaders to a program
@@ -39,8 +39,8 @@ CreateShader(const GLchar *VertexPath, const GLchar *FragmentPath)
   // We seek the end of the file then ask for its position
   fseek(VShaderFile, 0, SEEK_END);
   fseek(FShaderFile, 0, SEEK_END);
-  int64 VShaderFileSize = ftell(VShaderFile);
-  int64 FShaderFileSize = ftell(FShaderFile);
+  i64 VShaderFileSize = ftell(VShaderFile);
+  i64 FShaderFileSize = ftell(FShaderFile);
   // Then we seek back to the beginning
   rewind(VShaderFile);
   rewind(FShaderFile);
@@ -63,13 +63,13 @@ CreateShader(const GLchar *VertexPath, const GLchar *FragmentPath)
  
 
   // Compiler shaders
-  int32 Vertex;
-  uint32 Fragment;
-  int32 Success;
+  i32 Vertex;
+  u32 Fragment;
+  i32 Success;
   GLchar InfoLog[512];
 
-  int32 VertexBufferLength = (int32)strlen(VertexBuffer);
-  int32 FragmentBufferLength = (int32)strlen(FragmentBuffer);
+  i32 VertexBufferLength = (i32)strlen(VertexBuffer);
+  i32 FragmentBufferLength = (i32)strlen(FragmentBuffer);
 
   // Vertex Shader
   Vertex = glCreateShader(GL_VERTEX_SHADER);

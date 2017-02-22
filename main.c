@@ -11,19 +11,19 @@
 #include "Includes/typedefs.h"
 
 void
-KeyCallback(GLFWwindow *Window, int32 Key, int32 ScanCode, int32 Action, int32 Mode);
+KeyCallback(GLFWwindow *Window, i32 Key, i32 ScanCode, i32 Action, i32 Mode);
 
 void
 CameraMovement();
 
 void
-MouseCallback(GLFWwindow *Window, float64 XPos, float64 YPos);
+MouseCallback(GLFWwindow *Window, f64 XPos, f64 YPos);
 
 void
-MouseButtonCallback(GLFWwindow *Window, int32 Button, int32 Action, int32 Mode);
+MouseButtonCallback(GLFWwindow *Window, i32 Button, i32 Action, i32 Mode);
 
 void
-ScrollCallback(GLFWwindow *Window, float64 XOffset, float64 YOffset);
+ScrollCallback(GLFWwindow *Window, f64 XOffset, f64 YOffset);
 
 // Window resolution
 #define WIDTH 1028
@@ -32,17 +32,17 @@ ScrollCallback(GLFWwindow *Window, float64 XOffset, float64 YOffset);
 
 // Camera
 struct camera Camera;
-float32 LastX = WIDTH / 2.0f;
-float32 LastY = HEIGHT / 2.0f;
+f32 LastX = WIDTH / 2.0f;
+f32 LastY = HEIGHT / 2.0f;
 bool Keys[1024];
 
 bool FirstMouse = true;
 
-float64       DeltaTime = 0.0f;
-float64       LastFrame = 0.0f;
-const float32 FrameRate = 60.0f;
+f64       DeltaTime = 0.0f;
+f64       LastFrame = 0.0f;
+const f32 FrameRate = 60.0f;
 
-int32
+i32
 main()
 {
   glfwInit();
@@ -85,7 +85,7 @@ main()
 
   struct shader InitShader = CreateShader("../Shaders/init_shader.vs", "../Shaders/init_shader.frag");
 
-  float32 Vertices[] =
+  f32 Vertices[] =
     {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -131,7 +131,7 @@ main()
     };
 
   // First, set the container VAO and VBO
-  uint32 VBO, ContainerVAO;
+  u32 VBO, ContainerVAO;
   glGenVertexArrays(1, &ContainerVAO);
   glGenBuffers(1, &VBO);
 
@@ -139,11 +139,11 @@ main()
   glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
 
   glBindVertexArray(ContainerVAO);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, 5 * sizeof(float32), (GLvoid*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, 5 * sizeof(f32), (GLvoid*)0);
   glEnableVertexAttribArray(0);
 
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, 5 * sizeof(float32), 
-                                                  (GLvoid*)(3 * sizeof(float32)));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, 5 * sizeof(f32), 
+                                                  (GLvoid*)(3 * sizeof(f32)));
   glEnableVertexAttribArray(2);
   
   glBindVertexArray(0);
@@ -151,7 +151,7 @@ main()
   // Print version information to the command line
   printf("%s\n", glGetString(GL_VERSION));
 
-  uint8 ContainerImage = CreateTexture("../texture_and_images/container.jpg");
+  u8 ContainerImage = CreateTexture("../texture_and_images/container.jpg");
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, ContainerImage);
@@ -160,7 +160,7 @@ main()
 
   while (!glfwWindowShouldClose(Window))
   {
-    float64 CurrentFrame = glfwGetTime();
+    f64 CurrentFrame = glfwGetTime();
     DeltaTime = CurrentFrame - LastFrame;
     LastFrame = CurrentFrame;
 
@@ -173,18 +173,18 @@ main()
     UseShader(InitShader);
 
     struct mat4 ViewLookAt = GetViewMatrix(&Camera);
-    struct mat4 Projection = Mat4Perspective(Camera.Zoom, (float32)WIDTH / (float32)HEIGHT, 0.1f, 100.0f);
+    struct mat4 Projection = Mat4Perspective(Camera.Zoom, (f32)WIDTH / (f32)HEIGHT, 0.1f, 100.0f);
 
-    int32 ModelLoc = glGetUniformLocation(InitShader.Program, "model");
-    int32 ViewLoc = glGetUniformLocation(InitShader.Program, "view");
-    int32 ProjLoc = glGetUniformLocation(InitShader.Program, "projection");
+    i32 ModelLoc = glGetUniformLocation(InitShader.Program, "model");
+    i32 ViewLoc = glGetUniformLocation(InitShader.Program, "view");
+    i32 ProjLoc = glGetUniformLocation(InitShader.Program, "projection");
 
-    glUniformMatrix4fv(ViewLoc, 1, GL_FALSE, (float32*)&ViewLookAt);
-    glUniformMatrix4fv(ProjLoc, 1, GL_FALSE, (float32*)&Projection);
+    glUniformMatrix4fv(ViewLoc, 1, GL_FALSE, (f32*)&ViewLookAt);
+    glUniformMatrix4fv(ProjLoc, 1, GL_FALSE, (f32*)&Projection);
     
     glBindVertexArray(ContainerVAO);
     struct mat4 Model = Mat4Translate(&ModelPos);
-    glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, (float32*)&Model);
+    glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, (f32*)&Model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 
@@ -199,7 +199,7 @@ main()
 }
 
 void
-KeyCallback(GLFWwindow *Window, int32 Key, int32 ScanCode, int32 Action, int32 Mode)
+KeyCallback(GLFWwindow *Window, i32 Key, i32 ScanCode, i32 Action, i32 Mode)
 {
   if (Action == GLFW_PRESS || Action == GLFW_REPEAT)
   {
@@ -236,43 +236,43 @@ CameraMovement()
   // Camera movement
   if (Keys[GLFW_KEY_W])
   {
-    ProcessKeyboard(&Camera, FORWARD, (float32)DeltaTime);
+    ProcessKeyboard(&Camera, FORWARD, (f32)DeltaTime);
   }
   if (Keys[GLFW_KEY_S])
   {
-    ProcessKeyboard(&Camera, BACKWARD, (float32)DeltaTime);
+    ProcessKeyboard(&Camera, BACKWARD, (f32)DeltaTime);
   }
   if (Keys[GLFW_KEY_A])
   {
-    ProcessKeyboard(&Camera, LEFT, (float32)DeltaTime);
+    ProcessKeyboard(&Camera, LEFT, (f32)DeltaTime);
   }
   if (Keys[GLFW_KEY_D])
   {
-    ProcessKeyboard(&Camera, RIGHT, (float32)DeltaTime);
+    ProcessKeyboard(&Camera, RIGHT, (f32)DeltaTime);
   }
 }
 
 void
-MouseCallback(GLFWwindow *Window, float64 XPos, float64 YPos)
+MouseCallback(GLFWwindow *Window, f64 XPos, f64 YPos)
 {
   if (FirstMouse)
   {
-    LastX = (float32)XPos;
-    LastY = (float32)YPos;
+    LastX = (f32)XPos;
+    LastY = (f32)YPos;
     FirstMouse = false;
   }
 
-  float32 XOffset = (float32)XPos - LastX;
-  float32 YOffset = LastY - (float32)YPos;
+  f32 XOffset = (f32)XPos - LastX;
+  f32 YOffset = LastY - (f32)YPos;
 
-  LastX = (float32)XPos;
-  LastY = (float32)YPos;
+  LastX = (f32)XPos;
+  LastY = (f32)YPos;
 
   ProcessMouseMovement(&Camera, XOffset, YOffset, true);
 }
 
 void
-MouseButtonCallback(GLFWwindow *Window, int32 Button, int32 Action, int32 Mode)
+MouseButtonCallback(GLFWwindow *Window, i32 Button, i32 Action, i32 Mode)
 {
   if(Button == GLFW_MOUSE_BUTTON_LEFT && Action == GLFW_PRESS)
   {
@@ -294,7 +294,7 @@ MouseButtonCallback(GLFWwindow *Window, int32 Button, int32 Action, int32 Mode)
 }
 
 void
-ScrollCallback(GLFWwindow *Window, float64 XOffset, float64 YOffset)
+ScrollCallback(GLFWwindow *Window, f64 XOffset, f64 YOffset)
 {
-  ProcessMouseScroll(&Camera, (float32)YOffset);
+  ProcessMouseScroll(&Camera, (f32)YOffset);
 }

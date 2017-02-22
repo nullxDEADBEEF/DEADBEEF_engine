@@ -18,11 +18,11 @@ enum texture_filtering
 };
 
 // Load and generate a texture
-uint8 *
+u8 *
 LoadTexture(const char *TexturePath)
 {
-  int32 Width, Height, NumBits;
-  uint8 *Image = stbi_load(TexturePath, &Width, &Height, &NumBits, 0);
+  i32 Width, Height, NumBits;
+  u8 *Image = stbi_load(TexturePath, &Width, &Height, &NumBits, 0);
   
   if (Image == 0)
   {
@@ -36,24 +36,24 @@ LoadTexture(const char *TexturePath)
 }
 
 // Creating the texture, binding and freeing it 
-uint32
+u32
 CreateTexture(const char *TexturePath)
 {
-  uint32 Texture;
+  u32 Texture;
   glGenTextures(1, &Texture);
   glBindTexture(GL_TEXTURE_2D, Texture);
-  uint8 *Image = LoadTexture(TexturePath);
+  u8 *Image = LoadTexture(TexturePath);
   stbi_image_free(Image);
   glBindTexture(GL_TEXTURE_2D, 0);
 
   return(Texture);
 }
 
-uint8 *
+u8 *
 LoadImage(const char *ImagePath)
 {
-  int32 Width, Height, NumBits;
-  uint8 *Image = stbi_load(ImagePath, &Width, &Height, &NumBits, 0);
+  i32 Width, Height, NumBits;
+  u8 *Image = stbi_load(ImagePath, &Width, &Height, &NumBits, 0);
 
   if (Image == 0)
   {
