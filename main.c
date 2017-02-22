@@ -3,12 +3,12 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
-#include "Includes/shader.h"
-#include "Includes/math_lib.h"
-#include "Includes/camera.h"
-#include "Includes/textures.h"
-#include "Includes/light.h"
-#include "Includes/typedefs.h"
+#include "includes/shader.h"
+#include "includes/math_lib.h"
+#include "includes/camera.h"
+#include "includes/textures.h"
+#include "includes/light.h"
+#include "includes/typedefs.h"
 
 void
 KeyCallback(GLFWwindow *Window, i32 Key, i32 ScanCode, i32 Action, i32 Mode);
@@ -83,7 +83,7 @@ main()
   struct vec3 CameraUp = { 0.0f, 1.0f, 0.0f };
   Camera = CreateCamera(CameraStartPosition, CameraDirection, CameraUp);
 
-  struct shader InitShader = CreateShader("../Shaders/init_shader.vs", "../Shaders/init_shader.frag");
+  struct shader InitShader = CreateShader("../shaders/init_shader.vs", "../shaders/init_shader.frag");
 
   f32 Vertices[] =
     {
