@@ -83,7 +83,7 @@ main()
   struct vec3 CameraUp = { 0.0f, 1.0f, 0.0f };
   Camera = CreateCamera(CameraStartPosition, CameraDirection, CameraUp);
 
-  struct shader InitShader = CreateShader("../shaders/init_shader.vs", "../shaders/init_shader.frag");
+  struct shader InitShader = CreateShader("shaders/init_shader.vs", "shaders/init_shader.frag");
 
   f32 Vertices[] =
     {
@@ -151,7 +151,7 @@ main()
   // Print version information to the command line
   printf("%s\n", glGetString(GL_VERSION));
 
-  u8 ContainerImage = CreateTexture("../texture_and_images/container.jpg");
+  u8 ContainerImage = CreateTexture("texture_and_images/youdontsay.jpg");
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, ContainerImage);
