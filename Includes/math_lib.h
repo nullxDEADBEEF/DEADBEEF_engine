@@ -6,7 +6,15 @@
 #endif
 
 /*
-math_lib.h - v0.9.0
+      IMPORTANT THAT YOU DO #define DEADBEEF_MATH_IMPLEMENTATION before including the file, like this:
+      #define DEADBEEF_MATH_IMPLEMENTATION
+      #include "math_lib.h"
+
+      In one C/C++ file that includes this header
+*/
+
+/*
+math_lib.h - v0.2.0
 */
 
 #include <math.h>
@@ -33,10 +41,9 @@ ToDegrees(f32 Angle)
   return(f32) { Angle * (180.0f / PI) };
 }
 
-
 /* ------------------------------------------------------
 *
-*                       VECTOR MATH
+*                       STRUCTURES
 *
 *  -----------------------------------------------------*/
 
@@ -60,6 +67,24 @@ struct vec4
   f32 Z;
   f32 W;
 };
+
+struct mat2
+{
+  f32 Element[2][2];
+};
+
+struct mat4
+{
+  f32 Element[4][4];
+};
+
+/* ------------------------------------------------------
+*
+*                       VECTOR MATH
+*
+*  -----------------------------------------------------*/
+
+#ifdef DEADBEEF_MATH_IMPLEMENTATION
 
 // VEC 2 functions
 inline struct vec2 
@@ -196,16 +221,6 @@ NormalizeVec4(const struct vec4 V)
 *                       MATRIX MATH
 *
 *  -----------------------------------------------------*/
-
-struct mat2
-{
-  f32 Element[2][2];
-};
-
-struct mat4
-{
-  f32 Element[4][4];
-};
 
 // MATRIX 2
 inline struct mat2 
@@ -437,4 +452,6 @@ Mat4LookAt(const struct vec3 Eye, const struct vec3 Center, const struct vec3 Up
 *
 *  -----------------------------------------------------*/
 
-#endif
+#endif // DEADBEEF_MATH_IMPLEMENTATION
+
+#endif // math_lib.h

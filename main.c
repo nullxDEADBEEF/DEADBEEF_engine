@@ -3,8 +3,9 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
-#include "includes/shader.h"
+#define DEADBEEF_MATH_IMPLEMENTATION
 #include "includes/math_lib.h"
+#include "includes/shader.h"
 #include "includes/camera.h"
 #include "includes/textures.h"
 #include "includes/light.h"
@@ -151,13 +152,12 @@ main()
   // Print version information to the command line
   printf("%s\n", glGetString(GL_VERSION));
 
-  u8 ContainerImage = CreateTexture("texture_and_images/youdontsay.jpg");
-
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, ContainerImage);
+  u8 ExampleImage = LoadTexture("texture_and_images/youdontsay.jpg", TEXTURE_LINEAR_MIPMAP_LINEAR);
+  const f32 ZNear = 0.1f;
+  const f32 ZFar = 100.0f;
 
   struct vec3 ModelPos = { 1.2f, 1.0f, 4.0f };
-
+  
   while (!glfwWindowShouldClose(Window))
   {
     f64 CurrentFrame = glfwGetTime();
@@ -172,8 +172,11 @@ main()
 
     UseShader(InitShader);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, ExampleImage);
+
     struct mat4 ViewLookAt = GetViewMatrix(&Camera);
-    struct mat4 Projection = Mat4Perspective(Camera.Zoom, (f32)WIDTH / (f32)HEIGHT, 0.1f, 100.0f);
+    struct mat4 Projection = Mat4Perspective(Camera.Zoom, (f32)WIDTH / (f32)HEIGHT, ZNear, ZFar);
 
     i32 ModelLoc = glGetUniformLocation(InitShader.Program, "model");
     i32 ViewLoc = glGetUniformLocation(InitShader.Program, "view");

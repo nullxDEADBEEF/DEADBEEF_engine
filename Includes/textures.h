@@ -9,20 +9,34 @@
 
 enum texture_filtering 
 {
-  TEXTURE_MAG_NEAREST = 0,
-  TEXTURE_MIN_NEAREST = 1,
-  TEXTURE_NEAREST_MIPMAP_NEAREST = 2,
-  TEXTURE_LINEAR_MIPMAP_NEAREST = 3,
-  TEXTURE_NEAREST_MIPMA_LINEAR = 4,
-  TEXTURE_LINEAR_MAPMAP_LINEAR = 5,
+  TEXTURE_NEAREST_MIPMAP_NEAREST = 0,
+  TEXTURE_LINEAR_MIPMAP_NEAREST = 1,
+  TEXTURE_NEAREST_MIPMAP_LINEAR = 2,
+  TEXTURE_LINEAR_MIPMAP_LINEAR = 3,
+  TEXTURE_FILTERING_NONE = 4,
 };
+
+// Load an image
+u8 *
+LoadImage(const char *ImagePath)
+{
+  i32 Width, Height, NumBits;
+  u8 *Image = stbi_load(ImagePath, &Width, &Height, &NumBits, 0);
+
+  if (Image == 0)
+  {
+    fprintf(stderr, "Error in loading image: %s\n", Image);
+  }
+
+  return(Image);
+}
 
 // Load and generate a texture
 u8 *
-LoadTexture(const char *TexturePath)
+LoadImageTexture(const char *ImagePath)
 {
   i32 Width, Height, NumBits;
-  u8 *Image = stbi_load(TexturePath, &Width, &Height, &NumBits, 0);
+  u8 *Image = stbi_load(ImagePath, &Width, &Height, &NumBits, 0);
   
   if (Image == 0)
   {
@@ -35,33 +49,39 @@ LoadTexture(const char *TexturePath)
   return(Image);
 }
 
-// Creating the texture, binding and freeing it 
+// Gets the loaded texture, binds it and frees the image
 u32
-CreateTexture(const char *TexturePath)
+LoadTexture(const char *TexturePath, enum texture_filtering Filter)
 {
   u32 Texture;
   glGenTextures(1, &Texture);
   glBindTexture(GL_TEXTURE_2D, Texture);
-  u8 *Image = LoadTexture(TexturePath);
-  stbi_image_free(Image);
-  glBindTexture(GL_TEXTURE_2D, 0);
-
-  return(Texture);
-}
-
-u8 *
-LoadImage(const char *ImagePath)
-{
-  i32 Width, Height, NumBits;
-  u8 *Image = stbi_load(ImagePath, &Width, &Height, &NumBits, 0);
-
-  if (Image == 0)
+  if (Filter == TEXTURE_LINEAR_MIPMAP_LINEAR)
   {
-    fprintf(stderr, "Error in loading image: %s", Image);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  }
+  if (Filter == TEXTURE_NEAREST_MIPMAP_LINEAR)
+  {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  }
+  if (Filter == TEXTURE_LINEAR_MIPMAP_NEAREST)
+  {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  }
+  if (Filter == TEXTURE_NEAREST_MIPMAP_NEAREST)
+  {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   }
 
-  return(Image);
+  u8 *Image = LoadImageTexture(TexturePath);
+  stbi_image_free(Image);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  
+  return(Texture);
 }
-
 
 #endif
