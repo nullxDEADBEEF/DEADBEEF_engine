@@ -1,43 +1,34 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <stdio.h>
+#include <SDL.h>
 
 #define DEADBEEF_MATH_IMPLEMENTATION
 #include "includes/math_lib.h"
 #include "includes/shader.h"
 #include "includes/camera.h"
+#include "includes/input.h"
 #include "includes/textures.h"
 #include "includes/light.h"
 #include "includes/typedefs.h"
 
-void
-KeyCallback(GLFWwindow *Window, i32 Key, i32 ScanCode, i32 Action, i32 Mode);
+struct screen
+{
+  i16 W;
+  i16 H;
+};
 
 void
-CameraMovement();
+Init();
 
-void
-MouseCallback(GLFWwindow *Window, f64 XPos, f64 YPos);
-
-void
-MouseButtonCallback(GLFWwindow *Window, i32 Button, i32 Action, i32 Mode);
-
-void
-ScrollCallback(GLFWwindow *Window, f64 XOffset, f64 YOffset);
+#undef main
 
 // Window resolution
-#define WIDTH 1028
-#define HEIGHT 768
+struct screen WindowSize = { 1028, 768 };
 #define TITLE "DEADBEEF Engine"
 
 // Camera
 struct camera Camera;
-f32 LastX = WIDTH / 2.0f;
-f32 LastY = HEIGHT / 2.0f;
-bool Keys[1024];
-
-bool FirstMouse = true;
 
 f64       DeltaTime = 0.0f;
 f64       LastFrame = 0.0f;
@@ -46,28 +37,21 @@ const f32 FrameRate = 60.0f;
 i32
 main()
 {
-  glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+  Init();
 
-  GLFWwindow *Window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, NULL, NULL);
+  SDL_Window *Window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                        WindowSize.W, WindowSize.H, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
   if (Window == NULL)
   {
-    fprintf(stderr, "Error in creating the window!\n");
-    glfwTerminate();
+    fprintf(stderr, "Error in creating the window!\n %s\n", SDL_GetError());
+    SDL_Quit();
     return(-1);
   }
-  glfwSetWindowPos(Window, 200, 100);
 
-  glfwMakeContextCurrent(Window);
-  glfwSetKeyCallback(Window, KeyCallback);
-  glfwSetCursorPosCallback(Window, MouseCallback);
-  glfwSetMouseButtonCallback(Window, MouseButtonCallback);
-  glfwSetScrollCallback(Window, ScrollCallback);
-  
-  glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  SDL_GLContext Context = SDL_GL_CreateContext(Window);
+  SDL_GL_SetSwapInterval(1);
+
+  SDL_SetRelativeMouseMode(true);
 
   glewExperimental = true;
   if (glewInit() != GLEW_OK)
@@ -76,7 +60,7 @@ main()
     return(-1);
   }
 
-  glViewport(0, 0, WIDTH, HEIGHT);
+  glViewport(0, 0, WindowSize.W, WindowSize.H);
   glEnable(GL_DEPTH_TEST);
 
   struct vec3 CameraStartPosition = { 1.2f, 2.0f, 6.0f };
@@ -150,22 +134,28 @@ main()
   glBindVertexArray(0);
 
   // Print version information to the command line
-  printf("%s\n", glGetString(GL_VERSION));
+  SDL_version SDLVersion;
+  SDL_GetVersion(&SDLVersion);
+  printf("OpenGL %s\n", glGetString(GL_VERSION));
+  printf("SDL %d.%d.%d\n\n", SDLVersion.major, SDLVersion.minor, SDLVersion.patch);
 
   u8 ExampleImage = LoadTexture("texture_and_images/youdontsay.jpg", TEXTURE_LINEAR_MIPMAP_LINEAR);
+
   const f32 ZNear = 0.1f;
   const f32 ZFar = 100.0f;
 
   struct vec3 ModelPos = { 1.2f, 1.0f, 4.0f };
   
-  while (!glfwWindowShouldClose(Window))
+  struct key_state Ks = { false, false, false, false };
+
+  while (Running)
   {
-    f64 CurrentFrame = glfwGetTime();
-    DeltaTime = CurrentFrame - LastFrame;
+    f64 CurrentFrame = SDL_GetTicks();
+    DeltaTime = (CurrentFrame - LastFrame) / 1000.0f;
     LastFrame = CurrentFrame;
 
-    glfwPollEvents();
-    CameraMovement();
+    ProcessInputStates(&Camera, &Ks);
+    ProcessInput(&Camera, &Ks, (f32)DeltaTime);
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -176,7 +166,7 @@ main()
     glBindTexture(GL_TEXTURE_2D, ExampleImage);
 
     struct mat4 ViewLookAt = GetViewMatrix(&Camera);
-    struct mat4 Projection = Mat4Perspective(Camera.Zoom, (f32)WIDTH / (f32)HEIGHT, ZNear, ZFar);
+    struct mat4 Projection = Mat4Perspective(Camera.Zoom, (f32)WindowSize.W / (f32)WindowSize.H, ZNear, ZFar);
 
     i32 ModelLoc = glGetUniformLocation(InitShader.Program, "model");
     i32 ViewLoc = glGetUniformLocation(InitShader.Program, "view");
@@ -191,113 +181,28 @@ main()
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 
-    glfwSwapBuffers(Window);
+    SDL_GL_SwapWindow(Window);
   }
   glDeleteVertexArrays(1, &ContainerVAO);
   glDeleteBuffers(1, &VBO);
-  glfwDestroyWindow(Window);
+  SDL_GL_DeleteContext(Context);
+  SDL_DestroyWindow(Window);
+  SDL_Quit();
   
-  glfwTerminate();
   return(0);
 }
 
 void
-KeyCallback(GLFWwindow *Window, i32 Key, i32 ScanCode, i32 Action, i32 Mode)
+Init()
 {
-  if (Action == GLFW_PRESS || Action == GLFW_REPEAT)
+  if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
   {
-    Keys[Key] = true;
-  }
-  else if (Action == GLFW_RELEASE)
-  {
-    Keys[Key] = false;
+    printf("Error in initializing SDL...\n %s\n", SDL_GetError());
+    SDL_Quit();
   }
 
-  if (Keys[GLFW_KEY_ESCAPE])
-  {
-    glfwSetWindowShouldClose(Window, true);
-    printf("Exiting...\n");
-  }
-
-  // Wireframe mode
-  if (Keys[GLFW_KEY_1])
-  {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    printf("Wireframe mode\n");
-  }
-  // Filled mode
-  if (Keys[GLFW_KEY_2])
-  {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    printf("Filled mode\n");
-  }
-}
-
-void 
-CameraMovement()
-{
-  // Camera movement
-  if (Keys[GLFW_KEY_W])
-  {
-    ProcessKeyboard(&Camera, FORWARD, (f32)DeltaTime);
-  }
-  if (Keys[GLFW_KEY_S])
-  {
-    ProcessKeyboard(&Camera, BACKWARD, (f32)DeltaTime);
-  }
-  if (Keys[GLFW_KEY_A])
-  {
-    ProcessKeyboard(&Camera, LEFT, (f32)DeltaTime);
-  }
-  if (Keys[GLFW_KEY_D])
-  {
-    ProcessKeyboard(&Camera, RIGHT, (f32)DeltaTime);
-  }
-}
-
-void
-MouseCallback(GLFWwindow *Window, f64 XPos, f64 YPos)
-{
-  if (FirstMouse)
-  {
-    LastX = (f32)XPos;
-    LastY = (f32)YPos;
-    FirstMouse = false;
-  }
-
-  f32 XOffset = (f32)XPos - LastX;
-  f32 YOffset = LastY - (f32)YPos;
-
-  LastX = (f32)XPos;
-  LastY = (f32)YPos;
-
-  ProcessMouseMovement(&Camera, XOffset, YOffset, true);
-}
-
-void
-MouseButtonCallback(GLFWwindow *Window, i32 Button, i32 Action, i32 Mode)
-{
-  if(Button == GLFW_MOUSE_BUTTON_LEFT && Action == GLFW_PRESS)
-  {
-    printf("Left mouse button was clicked\n");
-  }
-  if(Button == GLFW_MOUSE_BUTTON_LEFT && Action == GLFW_RELEASE)
-  {
-    printf("Left mouse button was released\n");
-  }
-
-  if(Button == GLFW_MOUSE_BUTTON_RIGHT && Action == GLFW_PRESS)
-  {
-    printf("Right mouse button was clicked\n");
-  }
-  if(Button == GLFW_MOUSE_BUTTON_RIGHT && Action == GLFW_RELEASE)
-  {
-    printf("Right mouse button was released\n");
-  }
-}
-
-void
-ScrollCallback(GLFWwindow *Window, f64 XOffset, f64 YOffset)
-{
-  ProcessMouseScroll(&Camera, (f32)YOffset);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 }

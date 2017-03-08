@@ -13,6 +13,9 @@ enum camera_movement
   RIGHT    = 3,
 };
 
+void
+UpdateCameraVectors(struct camera *const Camera);
+
 // Camera values
 const f32         YAW = -90.0f;
 const f32       PITCH = 0.0f;
@@ -40,9 +43,6 @@ struct camera
   f32 Zoom;
 };
 
-void
-UpdateCameraVectors(struct camera *const Camera);
-
 struct camera 
 CreateCamera(const struct vec3 Position, const struct vec3 Front,  
              const struct vec3 Up)
@@ -64,66 +64,8 @@ CreateCamera(const struct vec3 Position, const struct vec3 Front,
 struct mat4 
 GetViewMatrix(struct camera *Camera)
 {
-  struct mat4 M = InitializeMat4(1.0f);
-  M = Mat4LookAt(Camera->Position, Vec3Add(Camera->Position, Camera->Front), Camera->Up);
+  struct mat4 M = Mat4LookAt(Camera->Position, Vec3Add(Camera->Position, Camera->Front), Camera->Up);
   return(M);
-}
-
-void 
-ProcessKeyboard(struct camera *Camera, enum camera_movement Direction, 
-                f32 DeltaTime)
-{
-  
-  f32 Velocity = Camera->MovementSpeed * DeltaTime;
-  if (Direction == FORWARD)
-  {
-    Camera->Position.X += Camera->Front.X * Velocity;
-    Camera->Position.Y += Camera->Front.Y * Velocity;
-    Camera->Position.Z += Camera->Front.Z * Velocity;
-  }
-  if (Direction == BACKWARD)
-  {
-    Camera->Position.X -= Camera->Front.X * Velocity;
-    Camera->Position.Y -= Camera->Front.Y * Velocity;
-    Camera->Position.Z -= Camera->Front.Z * Velocity;
-  }
-  if (Direction == LEFT)
-  {
-    Camera->Position.X -= Camera->Right.X * Velocity;
-    Camera->Position.Y -= Camera->Right.Y * Velocity;
-    Camera->Position.Z -= Camera->Right.Z * Velocity;
-  }
-  if (Direction == RIGHT)
-  {
-    Camera->Position.X += Camera->Right.X * Velocity;
-    Camera->Position.Y += Camera->Right.Y * Velocity;
-    Camera->Position.Z += Camera->Right.Z * Velocity;
-  }
-}
-
-void
-ProcessMouseMovement(struct camera *Camera, f32 XOffset, f32 YOffset, bool ConstrainPitch)
-{
-  ConstrainPitch = true;
-  XOffset *= Camera->MouseSensitivity;
-  YOffset *= Camera->MouseSensitivity;
-
-  Camera->Yaw += XOffset;
-  Camera->Pitch += YOffset;
-
-  if (ConstrainPitch)
-  {
-    if (Camera->Pitch > 89.0f)
-    {
-      Camera->Pitch = 89.0f;
-    }
-    if (Camera->Pitch < -89.0f)
-    {
-      Camera->Pitch = -89.0f;
-    }
-  }
-
-  UpdateCameraVectors(Camera);
 }
 
 void

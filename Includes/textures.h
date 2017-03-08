@@ -26,6 +26,7 @@ LoadImage(const char *ImagePath)
   if (Image == 0)
   {
     fprintf(stderr, "Error in loading image: %s\n", Image);
+    return((u8*)1);
   }
 
   return(Image);
@@ -41,6 +42,7 @@ LoadImageTexture(const char *ImagePath)
   if (Image == 0)
   {
     fprintf(stderr, "Error in loading Texture: %s", Image);
+    return((u8*)1);
   }
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, Image);
@@ -56,25 +58,30 @@ LoadTexture(const char *TexturePath, enum texture_filtering Filter)
   u32 Texture;
   glGenTextures(1, &Texture);
   glBindTexture(GL_TEXTURE_2D, Texture);
-  if (Filter == TEXTURE_LINEAR_MIPMAP_LINEAR)
+  switch (Filter)
   {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  }
-  if (Filter == TEXTURE_NEAREST_MIPMAP_LINEAR)
-  {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  }
-  if (Filter == TEXTURE_LINEAR_MIPMAP_NEAREST)
-  {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  }
-  if (Filter == TEXTURE_NEAREST_MIPMAP_NEAREST)
-  {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    case TEXTURE_LINEAR_MIPMAP_LINEAR:
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      break;
+
+    case TEXTURE_NEAREST_MIPMAP_LINEAR:
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      break;
+
+    case TEXTURE_LINEAR_MIPMAP_NEAREST:
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      break;
+
+    case TEXTURE_NEAREST_MIPMAP_NEAREST:
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      break;
+
+    default:
+      break;
   }
 
   u8 *Image = LoadImageTexture(TexturePath);

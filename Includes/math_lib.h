@@ -126,6 +126,7 @@ NormalizeVec2(const struct vec2 V)
 
 // VEC3 functions
 inline struct vec3 
+  //struct mat4 M = InitializeMat4(1.0f);
 Vec3Add(const struct vec3 V0, const struct vec3 V1)
 {
   return (struct vec3) { V0.X + V1.X, V0.Y + V1.Y, V0.Z + V1.Z };
@@ -169,6 +170,12 @@ NormalizeVec3(const struct vec3 V)
   return (struct vec3) { (V.X / Vec3Length(V)),
                          (V.Y / Vec3Length(V)),
                          (V.Z / Vec3Length(V)) };
+}
+
+inline f32
+Lerpf(const f32 Start, const f32 End, f32 Value)
+{
+  return((1 - Value) * Start + Value * End);
 }
 
 // VEC4 functions
